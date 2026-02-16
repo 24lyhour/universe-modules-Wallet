@@ -11,21 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Step 1: Add column without unique constraint
         Schema::table('wallets', function (Blueprint $table) {
-            $table->string('wallet_id', 20)->nullable()->after('id');
-        });
-
-        // Step 2: Generate wallet_id for existing records
-        $wallets = \DB::table('wallets')->orderBy('id')->get();
-        foreach ($wallets as $index => $wallet) {
-            $walletId = 'W' . str_pad($wallet->id, 8, '0', STR_PAD_LEFT);
-            \DB::table('wallets')->where('id', $wallet->id)->update(['wallet_id' => $walletId]);
-        }
-
-        // Step 3: Add unique constraint
-        Schema::table('wallets', function (Blueprint $table) {
-            $table->string('wallet_id', 20)->nullable(false)->unique()->change();
+            $table->foreignId('wallet_id')->nullable()->after('id')->constrained('wallets')->nullOnDelete();
         });
     }
 
@@ -35,6 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('wallets', function (Blueprint $table) {
+            $table->dropForeign(['wallet_id']);
             $table->dropColumn('wallet_id');
         });
     }
