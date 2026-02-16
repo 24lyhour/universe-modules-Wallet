@@ -94,11 +94,12 @@ const formatDate = (date: string) => {
     });
 };
 
-// Transform data for table
+// Transform data for table (keep raw values for slots)
 const tableData = computed<any[]>(() => {
     return props.walletItems.data.map((wallet) => ({
         ...wallet,
         customer: wallet.customer?.name || 'N/A',
+        balance_raw: wallet.balance,
         balance: formatCurrency(wallet.balance, wallet.currency),
         locked_amount: formatCurrency(wallet.locked_amount, wallet.currency),
         created_at: formatDate(wallet.created_at),
@@ -170,6 +171,16 @@ const tableData = computed<any[]>(() => {
                 @per-page-change="handlePerPageChange"
                 @search="handleSearch"
             >
+                <!-- Wallet number with balance badge -->
+                <template #cell-wallet_number="{ item }">
+                    <div class="flex flex-col gap-1">
+                        <span class="font-medium">{{ item.wallet_number }}</span>
+                        <Badge variant="outline" class="w-fit text-xs">
+                            {{ item.balance }}
+                        </Badge>
+                    </div>
+                </template>
+
                 <!-- Status column slot -->
                 <template #cell-status="{ item }">
                     <Badge :variant="item.status === 'active' ? 'default' : 'secondary'">
