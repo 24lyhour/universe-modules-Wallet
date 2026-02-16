@@ -29,8 +29,8 @@ const props = defineProps<Props>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Wallets', href: '/dashboard/wallets' },
-    { title: 'Settings', href: '/dashboard/wallets/settings' },
+    { title: 'Settings', href: '/dashboard/settings' },
+    { title: 'Wallet Settings', href: '/dashboard/settings/wallet' },
 ];
 
 // Wallet settings form
@@ -88,7 +88,7 @@ const previewWalletNumber = computed(() => {
 });
 
 const handleSave = () => {
-    form.patch('/dashboard/wallets/settings', {
+    form.patch('/dashboard/settings/wallet', {
         preserveScroll: true,
         onSuccess: () => {
             toast.success('Wallet settings saved successfully.');

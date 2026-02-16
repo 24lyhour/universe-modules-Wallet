@@ -8,9 +8,11 @@ use Modules\Wallets\Http\Controllers\Dashboard\V1\TransactionController;
 Route::middleware(['auth', 'verified'])
     ->prefix('dashboard')
     ->group(function () {
-        // Wallet Settings (must be before resource route to avoid conflict with {wallet} parameter)
-        Route::get('wallets/settings', [WalletSettingsController::class, 'index'])->name('wallets.settings');
-        Route::patch('wallets/settings', [WalletSettingsController::class, 'update'])->name('wallets.settings.update');
+        // Wallet Settings (under global settings)
+        Route::prefix('settings')->group(function () {
+            Route::get('wallet', [WalletSettingsController::class, 'index'])->name('settings.wallet');
+            Route::patch('wallet', [WalletSettingsController::class, 'update'])->name('settings.wallet.update');
+        });
 
         Route::resource('wallets', WalletController::class)->names('wallets');
         Route::get('wallets/{wallet}/delete', [WalletController::class, 'confirmDelete'])->name('wallets.delete');
