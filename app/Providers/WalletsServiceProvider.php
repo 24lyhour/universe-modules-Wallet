@@ -51,12 +51,23 @@ class WalletsServiceProvider extends ServiceProvider
             MenuService::addSubmenuItem(
                 'primary',
                 'wallets',
-                __('All Wallets'),
+                __('Wallets'),
                 route('wallets.index'),
                 10,
                 null,
-                'wallets.*',
+                'wallets.index',
                 'Wallet'
+            );
+
+            MenuService::addSubmenuItem(
+                'primary',
+                'wallets',
+                __('Transactions'),
+                route('transactions.index'),
+                20,
+                null,
+                'transactions.*',
+                'ArrowLeftRight'
             );
         });
     }

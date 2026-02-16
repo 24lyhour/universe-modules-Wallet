@@ -1,85 +1,81 @@
-// Wallet Module Types
+/**
+ * Wallets Module - TypeScript Type Definitions
+ *
+ * This is the main entry point for all Wallets module types.
+ * It re-exports from specialized files:
+ * - common.ts: Shared/generic types (pagination, currency, customer)
+ * - Wallet.ts: Wallet-related types, enums, configs, helpers
+ * - Transaction.ts: Transaction-related types, enums, configs, helpers
+ *
+ * @module Wallets/Types
+ */
 
-export interface Customer {
-    id: number;
-    name: string;
-    email: string;
-}
+// ============================================================================
+// RE-EXPORTS: COMMON TYPES
+// ============================================================================
 
-export interface Wallet {
-    id: number;
-    customer_id: number;
-    wallet_number: string;
-    balance: number;
-    locked_amount: number;
-    currency: string;
-    status: 'active' | 'inactive';
-    description: string | null;
-    created_at: string;
-    updated_at: string;
-    customer?: Customer;
-}
+export type {
+    CurrencyCode,
+    BadgeVariant,
+    PaginationMeta,
+    PaginatedResponse,
+    SelectOption,
+    StatusConfig,
+    Customer,
+    CustomerOption,
+} from './common';
 
-export interface WalletStats {
-    total: number;
-    active: number;
-    inactive: number;
-    total_balance: number;
-    total_locked: number;
-}
+export { getSelectOptions } from './common';
 
-export interface PaginationMeta {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-}
+// ============================================================================
+// RE-EXPORTS: WALLET TYPES
+// ============================================================================
 
-export interface PaginatedResponse<T> {
-    data: T[];
-    meta: PaginationMeta;
-}
+export {
+    WalletStatusEnum,
+    type WalletStatus,
+    type Wallet,
+    type WalletSummary,
+    type WalletFormData,
+    type WalletStats,
+    type WalletFilters,
+    type WalletIndexProps,
+    type WalletCreateProps,
+    type WalletEditProps,
+    type WalletDeleteProps,
+    type WalletShowProps,
+    WALLET_STATUS_CONFIG,
+    canWalletTransact,
+    getWalletStatusOptions,
+} from './Wallet';
 
-export interface WalletFilters {
-    status?: string;
-    search?: string;
-}
+// ============================================================================
+// RE-EXPORTS: TRANSACTION TYPES
+// ============================================================================
 
-export interface WalletFormData {
-    customer_id: number | null;
-    wallet_number: string;
-    balance: number;
-    locked_amount: number;
-    currency: string;
-    status: 'active' | 'inactive';
-    description: string;
-}
-
-export interface CustomerOption {
-    id: number;
-    name: string;
-    email: string;
-}
-
-export interface WalletIndexProps {
-    walletItems: PaginatedResponse<Wallet>;
-    filters: WalletFilters;
-    stats: WalletStats;
-}
-
-export interface WalletCreateProps {
-    customers: CustomerOption[];
-}
-
-export interface WalletEditProps {
-    wallet: Wallet;
-    customers: CustomerOption[];
-}
-
-export interface WalletDeleteProps {
-    wallet: Wallet;
-}
-
-export interface WalletShowProps {
-    wallet: Wallet;
-}
+export {
+    TransactionTypeEnum,
+    type TransactionType,
+    TransactionStatusEnum,
+    type TransactionStatus,
+    type RelatedWallet,
+    type TransactionReference,
+    type TransferableWallet,
+    type Transaction,
+    type TransactionDetail,
+    type TransactionStats,
+    type TransactionFilters,
+    type TransactionIndexProps,
+    type TransactionShowProps,
+    type DepositProps,
+    type WithdrawProps,
+    type TransferProps,
+    type TransactionTypeConfig,
+    TRANSACTION_TYPE_CONFIG,
+    TRANSACTION_STATUS_CONFIG,
+    isCreditTransaction,
+    isDebitTransaction,
+    isTransactionFinal,
+    getTransactionTypeOptions,
+    getTransactionStatusOptions,
+} from './Transaction';

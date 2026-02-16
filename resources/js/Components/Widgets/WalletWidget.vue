@@ -27,6 +27,7 @@ import {
     RefreshCw,
     CheckCircle,
     XCircle,
+    AlertTriangle,
     PieChart,
     BarChart3,
     Activity,
@@ -38,6 +39,7 @@ export interface WalletMetrics {
     total: number;
     active: number;
     inactive: number;
+    suspended: number;
     totalBalance: number;
     totalLocked: number;
     averageBalance: number;
@@ -102,6 +104,7 @@ const formatPercent = (num: number) => {
 const statusChartConfig: ChartConfig = {
     active: { label: 'Active', color: 'var(--chart-2)' },
     inactive: { label: 'Inactive', color: 'var(--chart-4)' },
+    suspended: { label: 'Suspended', color: 'var(--chart-3)' },
 };
 
 const balanceChartConfig: ChartConfig = {
@@ -137,6 +140,7 @@ const balanceTrendData = computed<BalanceTrendPoint[]>(() => {
 // Donut chart data for status distribution
 const statusDonutData = computed(() => [
     { status: 'active', label: 'Active', value: props.metrics.active, fill: 'var(--color-active)' },
+    { status: 'suspended', label: 'Suspended', value: props.metrics.suspended, fill: 'var(--color-suspended)' },
     { status: 'inactive', label: 'Inactive', value: props.metrics.inactive, fill: 'var(--color-inactive)' },
 ]);
 
@@ -163,6 +167,13 @@ const stats = computed(() => [
         bgColor: 'bg-green-100',
     },
     {
+        label: 'Suspended',
+        value: props.metrics.suspended,
+        icon: AlertTriangle,
+        color: 'text-yellow-600',
+        bgColor: 'bg-yellow-100',
+    },
+    {
         label: 'Inactive',
         value: props.metrics.inactive,
         icon: XCircle,
@@ -182,13 +193,6 @@ const stats = computed(() => [
         icon: Lock,
         color: 'text-orange-600',
         bgColor: 'bg-orange-100',
-    },
-    {
-        label: 'Avg Balance',
-        value: formatCurrency(props.metrics.averageBalance),
-        icon: TrendingUp,
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-100',
     },
 ]);
 
@@ -298,7 +302,7 @@ const handleRefresh = () => {
                         <PieChart class="h-5 w-5" />
                         Wallet Status Distribution
                     </CardTitle>
-                    <CardDescription>Active vs Inactive wallets</CardDescription>
+                    <CardDescription>Active, Suspended, and Inactive wallets</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div class="grid gap-6 lg:grid-cols-2">
@@ -342,6 +346,7 @@ const handleRefresh = () => {
                                         class="h-3 w-3 rounded-full"
                                         :class="{
                                             'bg-chart-2': item.status === 'active',
+                                            'bg-chart-3': item.status === 'suspended',
                                             'bg-chart-4': item.status === 'inactive',
                                         }"
                                     ></span>
@@ -349,7 +354,10 @@ const handleRefresh = () => {
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium">{{ formatNumber(item.value) }}</span>
-                                    <Badge :variant="item.status === 'active' ? 'default' : 'secondary'" class="text-xs">
+                                    <Badge
+                                        :variant="item.status === 'active' ? 'default' : item.status === 'suspended' ? 'outline' : 'secondary'"
+                                        class="text-xs"
+                                    >
                                         {{ formatPercent((item.value / metrics.total) * 100) }}
                                     </Badge>
                                 </div>

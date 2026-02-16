@@ -44,10 +44,11 @@ class WalletController extends Controller
 
         $stats = [
             'total' => Wallet::count(),
-            'active' => Wallet::where('status', 'active')->count(),
-            'inactive' => Wallet::where('status', 'inactive')->count(),
-            'total_balance' => Wallet::sum('balance'),
-            'total_locked' => Wallet::sum('locked_amount'),
+            'active' => Wallet::active()->count(),
+            'inactive' => Wallet::inactive()->count(),
+            'suspended' => Wallet::suspended()->count(),
+            'total_balance' => (float) Wallet::sum('balance'),
+            'total_locked' => (float) Wallet::sum('locked_amount'),
         ];
 
         return Inertia::render('wallets::dashboard/v1/wallet/Index', [
@@ -153,14 +154,77 @@ class WalletController extends Controller
     }
 
     /**
-     * Toggle wallet status.
+     * Activate a wallet.
      */
-    public function toggleStatus(Request $request, Wallet $wallet): RedirectResponse
+    public function activate(Wallet $wallet): RedirectResponse
     {
-        $wallet->update([
-            'status' => $request->boolean('status') ? 'active' : 'inactive',
+        $wallet->activate();
+
+        return redirect()
+            ->back()
+            ->with('success', 'Wallet activated successfully.');
+    }
+
+    /**
+     * Deactivate a wallet (permanent).
+     */
+    public function deactivate(Wallet $wallet): RedirectResponse
+    {
+        $wallet->deactivate();
+
+        return redirect()
+            ->back()
+            ->with('success', 'Wallet deactivated successfully.');
+    }
+
+    /**
+     * Suspend a wallet (temporary).
+     */
+    public function suspend(Request $request, Wallet $wallet): RedirectResponse
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:255',
         ]);
 
-        return redirect()->back();
+        $wallet->suspend($request->input('reason'));
+
+        return redirect()
+            ->back()
+            ->with('success', 'Wallet suspended successfully.');
+    }
+
+    /**
+     * Unsuspend a wallet (reactivate from suspended).
+     */
+    public function unsuspend(Wallet $wallet): RedirectResponse
+    {
+        $wallet->unsuspend();
+
+        return redirect()
+            ->back()
+            ->with('success', 'Wallet unsuspended successfully.');
+    }
+
+    /**
+     * Change wallet status.
+     */
+    public function changeStatus(Request $request, Wallet $wallet): RedirectResponse
+    {
+        $request->validate([
+            'status' => 'required|in:active,inactive,suspended',
+            'reason' => 'nullable|string|max:255',
+        ]);
+
+        $status = $request->input('status');
+
+        match ($status) {
+            Wallet::STATUS_ACTIVE => $wallet->activate(),
+            Wallet::STATUS_INACTIVE => $wallet->deactivate(),
+            Wallet::STATUS_SUSPENDED => $wallet->suspend($request->input('reason')),
+        };
+
+        return redirect()
+            ->back()
+            ->with('success', 'Wallet status updated successfully.');
     }
 }
