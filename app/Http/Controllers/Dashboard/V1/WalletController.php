@@ -12,9 +12,13 @@ use Modules\Wallets\Models\Wallet;
 use Modules\Wallets\Http\Requests\StoreWalletRequest;
 use Modules\Wallets\Http\Requests\UpdateWalletRequest;
 use Modules\Customer\Models\Customer;
+use Modules\Wallets\Actions\Dashboard\V1\CreateWalletAction;
 
 class WalletController extends Controller
 {
+    public function __construct(
+        protected CreateWalletAction $createWalletAction
+    ) {}
     /**
      * Display a listing of wallets.
      */
@@ -86,11 +90,11 @@ class WalletController extends Controller
      */
     public function store(StoreWalletRequest $request): RedirectResponse
     {
-        Wallet::create($request->validated());
+        $wallet = $this->createWalletAction->execute($request->validated());
 
         return redirect()
             ->route('wallets.index')
-            ->with('success', 'Wallet created successfully.');
+            ->with('success', "Wallet {$wallet->wallet_number} created successfully.");
     }
 
     /**

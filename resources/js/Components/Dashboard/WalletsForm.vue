@@ -56,15 +56,20 @@ const customerOptions = computed<SearchableSelectOption[]>(() => {
                     </p>
                 </div>
 
-                <div class="space-y-2">
-                    <Label for="wallet_number">Wallet Number <span class="text-destructive">*</span></Label>
+                <!-- Wallet Number (only shown in edit mode, auto-generated on create) -->
+                <div v-if="mode === 'edit'" class="space-y-2">
+                    <Label for="wallet_number">Wallet Number</Label>
                     <Input
                         id="wallet_number"
                         v-model="model.wallet_number"
-                        placeholder="Enter wallet number (e.g. WAL-12345)"
+                        disabled
+                        class="bg-muted"
                     />
-                    <p v-if="model.errors.wallet_number" class="text-sm text-destructive">
-                        {{ model.errors.wallet_number }}
+                    <p class="text-xs text-muted-foreground">Wallet number is auto-generated and cannot be changed</p>
+                </div>
+                <div v-else class="rounded-md border border-dashed p-3 bg-muted/50">
+                    <p class="text-sm text-muted-foreground">
+                        Wallet ID and Number will be auto-generated when you create the wallet.
                     </p>
                 </div>
 

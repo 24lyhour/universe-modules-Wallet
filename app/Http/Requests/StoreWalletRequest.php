@@ -15,7 +15,7 @@ class StoreWalletRequest extends FormRequest
     {
         return [
             'customer_id' => ['required', 'integer', 'exists:customers,id'],
-            'wallet_number' => ['required', 'string', 'unique:wallets,wallet_number'],
+            'wallet_number' => ['nullable', 'string', 'unique:wallets,wallet_number'], // Auto-generated if not provided
             'balance' => ['nullable', 'numeric', 'min:0'],
             'currency' => ['nullable', 'string', 'max:3'],
             'description' => ['nullable', 'string', 'max:255'],
@@ -27,7 +27,6 @@ class StoreWalletRequest extends FormRequest
         return [
             'customer_id.required' => 'Customer is required',
             'customer_id.exists' => 'Selected customer does not exist',
-            'wallet_number.required' => 'Wallet number is required',
             'wallet_number.unique' => 'This wallet number already exists',
             'balance.numeric' => 'Balance must be a number',
             'balance.min' => 'Balance cannot be negative',

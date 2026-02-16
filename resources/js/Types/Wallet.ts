@@ -70,7 +70,7 @@ export interface WalletSummary {
 /** Wallet form data for create/edit */
 export interface WalletFormData {
     customer_id: number | null;
-    wallet_number: string;
+    wallet_number?: string; // Auto-generated on create
     balance: number;
     locked_amount: number;
     currency: string;

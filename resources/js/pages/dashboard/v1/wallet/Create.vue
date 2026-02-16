@@ -23,7 +23,6 @@ const isOpen = computed({
 
 const form = useForm<WalletFormData>({
     customer_id: null,
-    wallet_number: '',
     balance: 0,
     locked_amount: 0,
     currency: 'USD',
@@ -32,7 +31,7 @@ const form = useForm<WalletFormData>({
 });
 
 const isFormInvalid = computed(() => {
-    return !form.wallet_number || form.customer_id === null;
+    return form.customer_id === null;
 });
 
 const handleSubmit = () => {

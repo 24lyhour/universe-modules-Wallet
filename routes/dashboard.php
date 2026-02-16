@@ -2,11 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Wallets\Http\Controllers\Dashboard\V1\WalletController;
+use Modules\Wallets\Http\Controllers\Dashboard\V1\WalletSettingsController;
 use Modules\Wallets\Http\Controllers\Dashboard\V1\TransactionController;
 
 Route::middleware(['auth', 'verified'])
     ->prefix('dashboard')
     ->group(function () {
+        // Wallet Settings (must be before resource route to avoid conflict with {wallet} parameter)
+        Route::get('wallets/settings', [WalletSettingsController::class, 'index'])->name('wallets.settings');
+        Route::patch('wallets/settings', [WalletSettingsController::class, 'update'])->name('wallets.settings.update');
+
         Route::resource('wallets', WalletController::class)->names('wallets');
         Route::get('wallets/{wallet}/delete', [WalletController::class, 'confirmDelete'])->name('wallets.delete');
 
