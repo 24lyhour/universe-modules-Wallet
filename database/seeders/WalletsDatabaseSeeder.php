@@ -11,6 +11,8 @@ class WalletsDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call([]);
+        $this->call([
+            WalletSeeder::class,
+        ]);
     }
 }

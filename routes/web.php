@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Wallets\Http\Controllers\WalletsController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('wallets', WalletsController::class)->names('wallets');
-});
+// Web routes for Wallets module (public routes go here)
+// Dashboard routes are in dashboard.php
