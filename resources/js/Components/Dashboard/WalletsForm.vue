@@ -2,14 +2,8 @@
 import { computed } from 'vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { SearchableSelect, type SearchableSelectOption } from '@/components/shared/SearchableSelect';
 import type { InertiaForm } from '@inertiajs/vue3';
 import type { WalletFormData, CustomerOption } from '../../Types';
 
@@ -25,12 +19,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 const model = defineModel<InertiaForm<WalletFormData>>({ required: true });
 
-// Computed for customer select
-const selectedCustomer = computed({
-    get: () => model.value.customer_id?.toString(),
-    set: (value: string | undefined) => {
-        model.value.customer_id = value ? parseInt(value) : null;
-    },
+// Transform customers to SearchableSelect options
+const customerOptions = computed<SearchableSelectOption[]>(() => {
+    return props.customers.map((customer) => ({
+        value: customer.id,
+        label: customer.name,
+        description: customer.email || undefined,
+    }));
 });
 </script>
 
@@ -49,20 +44,13 @@ const selectedCustomer = computed({
             <div class="grid gap-4 py-4">
                 <div class="space-y-2">
                     <Label for="customer_id">Customer <span class="text-destructive">*</span></Label>
-                    <Select v-model="selectedCustomer">
-                        <SelectTrigger id="customer_id">
-                            <SelectValue placeholder="Select a customer" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem
-                                v-for="customer in props.customers"
-                                :key="customer.id"
-                                :value="customer.id.toString()"
-                            >
-                                {{ customer.name }}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <SearchableSelect
+                        v-model="model.customer_id"
+                        :options="customerOptions"
+                        placeholder="Select a customer..."
+                        search-placeholder="Search customers..."
+                        empty-message="No customers found."
+                    />
                     <p v-if="model.errors.customer_id" class="text-sm text-destructive">
                         {{ model.errors.customer_id }}
                     </p>

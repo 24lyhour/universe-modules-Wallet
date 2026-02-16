@@ -13,6 +13,7 @@ class Wallet extends Model
     protected $table = 'wallets';
 
     protected $fillable = [
+        'wallet_id',
         'customer_id',
         'wallet_number',
         'balance',

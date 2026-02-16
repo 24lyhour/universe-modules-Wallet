@@ -2,6 +2,7 @@
 
 namespace Modules\Wallets\Providers;
 
+use App\Services\MenuService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
@@ -27,6 +28,37 @@ class WalletsServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        $this->registerMenuItems();
+    }
+
+    /**
+     * Register menu items for the Wallets module.
+     */
+    protected function registerMenuItems(): void
+    {
+        $this->app->booted(function () {
+            MenuService::addMenuItem(
+                menu: 'primary',
+                id: 'wallets',
+                title: __('Wallets'),
+                url: route('wallets.index'),
+                icon: 'Wallet',
+                order: 50,
+                permissions: null,
+                route: 'wallets.*'
+            );
+
+            MenuService::addSubmenuItem(
+                'primary',
+                'wallets',
+                __('All Wallets'),
+                route('wallets.index'),
+                10,
+                null,
+                'wallets.*',
+                'Wallet'
+            );
+        });
     }
 
     /**
