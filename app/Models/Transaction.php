@@ -211,7 +211,7 @@ class Transaction extends Model
         ]);
     }
 
-    public function markAsFailed(string $reason = null): bool
+    public function markAsFailed(?string $reason = null): bool
     {
         if ($this->status->isFinal()) {
             return false;

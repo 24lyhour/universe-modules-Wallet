@@ -13,6 +13,7 @@ class WalletsDatabaseSeeder extends Seeder
     {
         $this->call([
             WalletSeeder::class,
+            TransactionSeeder::class,
         ]);
     }
 }
