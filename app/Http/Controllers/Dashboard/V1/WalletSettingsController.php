@@ -12,11 +12,27 @@ use Inertia\Response;
 class WalletSettingsController extends Controller
 {
     /**
+     * Default wallet settings.
+     */
+    protected array $defaults = [
+        'id_prefix' => 'W',
+        'id_padding' => 8,
+        'number_prefix' => 'WLT',
+        'number_separator' => '-',
+        'number_date_format' => 'Ymd',
+        'number_random_length' => 5,
+        'default_currency' => 'USD',
+    ];
+
+    /**
      * Display wallet settings page.
      */
     public function index(): Response
     {
         $walletSettings = Setting::getGroup('wallet');
+
+        // Merge with defaults for any missing settings
+        $walletSettings = array_merge($this->defaults, $walletSettings);
 
         return Inertia::render('wallets::settings/Index', [
             'walletSettings' => $walletSettings,

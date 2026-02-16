@@ -33,15 +33,15 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Wallet Settings', href: '/dashboard/settings/wallet' },
 ];
 
-// Wallet settings form
+// Wallet settings form (defaults provided by backend)
 const form = useForm({
-    id_prefix: props.walletSettings?.id_prefix || 'W',
-    id_padding: props.walletSettings?.id_padding || 8,
-    number_prefix: props.walletSettings?.number_prefix || 'WLT',
-    number_separator: props.walletSettings?.number_separator || '-',
-    number_date_format: props.walletSettings?.number_date_format || 'Ymd',
-    number_random_length: props.walletSettings?.number_random_length || 5,
-    default_currency: props.walletSettings?.default_currency || 'USD',
+    id_prefix: props.walletSettings.id_prefix,
+    id_padding: props.walletSettings.id_padding,
+    number_prefix: props.walletSettings.number_prefix,
+    number_separator: props.walletSettings.number_separator,
+    number_date_format: props.walletSettings.number_date_format,
+    number_random_length: props.walletSettings.number_random_length,
+    default_currency: props.walletSettings.default_currency,
 });
 
 // Generate preview wallet ID and number
