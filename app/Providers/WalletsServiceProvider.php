@@ -44,7 +44,7 @@ class WalletsServiceProvider extends ServiceProvider
                 url: route('wallets.index'),
                 icon: 'Wallet',
                 order: 50,
-                permissions: null,
+                permissions: 'wallets.view_any',
                 route: 'wallets.*'
             );
 
@@ -54,7 +54,7 @@ class WalletsServiceProvider extends ServiceProvider
                 __('Wallets'),
                 route('wallets.index'),
                 10,
-                null,
+                'wallets.view_any',
                 'wallets.index',
                 'Wallet'
             );
@@ -65,7 +65,7 @@ class WalletsServiceProvider extends ServiceProvider
                 __('Transactions'),
                 route('transactions.index'),
                 20,
-                null,
+                'transactions.view_any',
                 'transactions.*',
                 'ArrowLeftRight'
             );
