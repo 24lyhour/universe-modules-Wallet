@@ -5,7 +5,7 @@ use Modules\Wallets\Http\Controllers\Dashboard\V1\WalletController;
 use Modules\Wallets\Http\Controllers\Dashboard\V1\WalletSettingsController;
 use Modules\Wallets\Http\Controllers\Dashboard\V1\TransactionController;
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'auto.permission'])
     ->prefix('dashboard')
     ->group(function () {
         // Wallet Settings (under global settings)
