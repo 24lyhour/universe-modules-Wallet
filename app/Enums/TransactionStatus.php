@@ -10,9 +10,10 @@ enum TransactionStatus: string
     case FAILED = 'failed';
     case CANCELLED = 'cancelled';
     case REVERSED = 'reversed';
+    case REFUNDED = 'refunded';
 
     /**
-     * Get human-readable label
+     * Get human-readable label.
      */
     public function label(): string
     {
@@ -23,11 +24,12 @@ enum TransactionStatus: string
             self::FAILED => 'Failed',
             self::CANCELLED => 'Cancelled',
             self::REVERSED => 'Reversed',
+            self::REFUNDED => 'Refunded',
         };
     }
 
     /**
-     * Get display color for UI
+     * Get display color for UI.
      */
     public function color(): string
     {
@@ -38,11 +40,12 @@ enum TransactionStatus: string
             self::FAILED => 'destructive',
             self::CANCELLED => 'secondary',
             self::REVERSED => 'outline',
+            self::REFUNDED => 'warning',
         };
     }
 
     /**
-     * Get badge variant for UI
+     * Get badge variant for UI.
      */
     public function variant(): string
     {
@@ -53,11 +56,12 @@ enum TransactionStatus: string
             self::FAILED => 'destructive',
             self::CANCELLED => 'secondary',
             self::REVERSED => 'outline',
+            self::REFUNDED => 'outline',
         };
     }
 
     /**
-     * Check if transaction is final (no more changes)
+     * Check if transaction is final (no more changes).
      */
     public function isFinal(): bool
     {
@@ -66,6 +70,7 @@ enum TransactionStatus: string
             self::FAILED,
             self::CANCELLED,
             self::REVERSED,
+            self::REFUNDED,
         ]);
     }
 
@@ -81,9 +86,17 @@ enum TransactionStatus: string
     }
 
     /**
-     * Check if transaction can be reversed
+     * Check if transaction can be reversed.
      */
     public function canReverse(): bool
+    {
+        return $this === self::COMPLETED;
+    }
+
+    /**
+     * Check if transaction can be refunded.
+     */
+    public function canRefund(): bool
     {
         return $this === self::COMPLETED;
     }

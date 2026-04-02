@@ -9,21 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Modules\Wallets\Enums\TransactionType;
 use Modules\Wallets\Enums\TransactionStatus;
+use Modules\Wallets\Enums\WalletStatus;
 
 class Wallet extends Model
 {
     use HasFactory, SoftDeletes;
-
-    // Status constants
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_INACTIVE = 'inactive';
-    public const STATUS_SUSPENDED = 'suspended';
-
-    public const STATUSES = [
-        self::STATUS_ACTIVE,
-        self::STATUS_INACTIVE,
-        self::STATUS_SUSPENDED,
-    ];
 
     protected $table = 'wallets';
 
@@ -33,6 +23,9 @@ class Wallet extends Model
         'wallet_number',
         'balance',
         'locked_amount',
+        'payment_method',
+        'payment_id',
+        'top_up_id',
         'currency',
         'status',
         'description',
@@ -43,6 +36,7 @@ class Wallet extends Model
     protected $casts = [
         'balance' => 'decimal:2',
         'locked_amount' => 'decimal:2',
+        'status' => WalletStatus::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -53,7 +47,7 @@ class Wallet extends Model
         'balance' => 0,
         'locked_amount' => 0,
         'currency' => 'USD',
-        'status' => self::STATUS_ACTIVE,
+        'status' => 'active',
     ];
 
     /**
@@ -90,35 +84,35 @@ class Wallet extends Model
     }
 
     /**
-     * Check if wallet is active
+     * Check if wallet is active.
      */
     public function isActive(): bool
     {
-        return $this->status === self::STATUS_ACTIVE;
+        return $this->status === WalletStatus::Active;
     }
 
     /**
-     * Check if wallet is inactive
+     * Check if wallet is inactive.
      */
     public function isInactive(): bool
     {
-        return $this->status === self::STATUS_INACTIVE;
+        return $this->status === WalletStatus::Inactive;
     }
 
     /**
-     * Check if wallet is suspended
+     * Check if wallet is suspended.
      */
     public function isSuspended(): bool
     {
-        return $this->status === self::STATUS_SUSPENDED;
+        return $this->status === WalletStatus::Suspended;
     }
 
     /**
-     * Check if wallet can perform transactions
+     * Check if wallet can perform transactions.
      */
     public function canTransact(): bool
     {
-        return $this->isActive();
+        return $this->status->canTransact();
     }
 
     /**
@@ -127,7 +121,7 @@ class Wallet extends Model
     public function activate(): bool
     {
         $this->update([
-            'status' => self::STATUS_ACTIVE,
+            'status' => WalletStatus::Active,
             'suspended_at' => null,
             'suspended_reason' => null,
         ]);
@@ -140,7 +134,7 @@ class Wallet extends Model
     public function deactivate(): bool
     {
         $this->update([
-            'status' => self::STATUS_INACTIVE,
+            'status' => WalletStatus::Inactive,
         ]);
         return true;
     }
@@ -151,7 +145,7 @@ class Wallet extends Model
     public function suspend(?string $reason = null): bool
     {
         $this->update([
-            'status' => self::STATUS_SUSPENDED,
+            'status' => WalletStatus::Suspended,
             'suspended_at' => now(),
             'suspended_reason' => $reason,
         ]);
@@ -176,7 +170,7 @@ class Wallet extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', self::STATUS_ACTIVE);
+        return $query->where('status', WalletStatus::Active);
     }
 
     /**
@@ -184,7 +178,7 @@ class Wallet extends Model
      */
     public function scopeInactive($query)
     {
-        return $query->where('status', self::STATUS_INACTIVE);
+        return $query->where('status', WalletStatus::Inactive);
     }
 
     /**
@@ -192,7 +186,7 @@ class Wallet extends Model
      */
     public function scopeSuspended($query)
     {
-        return $query->where('status', self::STATUS_SUSPENDED);
+        return $query->where('status', WalletStatus::Suspended);
     }
 
     /**
@@ -208,7 +202,7 @@ class Wallet extends Model
      */
     public function scopeCanTransact($query)
     {
-        return $query->where('status', self::STATUS_ACTIVE);
+        return $query->where('status', WalletStatus::Active);
     }
 
     // ==================== BALANCE OPERATIONS ====================
@@ -488,15 +482,10 @@ class Wallet extends Model
     }
 
     /**
-     * Get status badge color
+     * Get status badge color.
      */
     public function getStatusColorAttribute(): string
     {
-        return match ($this->status) {
-            self::STATUS_ACTIVE => 'success',
-            self::STATUS_INACTIVE => 'secondary',
-            self::STATUS_SUSPENDED => 'warning',
-            default => 'secondary',
-        };
+        return $this->status->color();
     }
 }

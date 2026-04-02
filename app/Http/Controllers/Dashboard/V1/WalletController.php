@@ -11,8 +11,10 @@ use Momentum\Modal\Modal;
 use Modules\Wallets\Models\Wallet;
 use Modules\Wallets\Http\Requests\StoreWalletRequest;
 use Modules\Wallets\Http\Requests\UpdateWalletRequest;
+use Illuminate\Validation\Rule;
 use Modules\Customer\Models\Customer;
 use Modules\Wallets\Actions\Dashboard\V1\CreateWalletAction;
+use Modules\Wallets\Enums\WalletStatus;
 
 class WalletController extends Controller
 {
@@ -215,16 +217,16 @@ class WalletController extends Controller
     public function changeStatus(Request $request, Wallet $wallet): RedirectResponse
     {
         $request->validate([
-            'status' => 'required|in:active,inactive,suspended',
+            'status' => ['required', Rule::in(WalletStatus::values())],
             'reason' => 'nullable|string|max:255',
         ]);
 
-        $status = $request->input('status');
+        $status = WalletStatus::from($request->input('status'));
 
         match ($status) {
-            Wallet::STATUS_ACTIVE => $wallet->activate(),
-            Wallet::STATUS_INACTIVE => $wallet->deactivate(),
-            Wallet::STATUS_SUSPENDED => $wallet->suspend($request->input('reason')),
+            WalletStatus::Active => $wallet->activate(),
+            WalletStatus::Inactive => $wallet->deactivate(),
+            WalletStatus::Suspended => $wallet->suspend($request->input('reason')),
         };
 
         return redirect()
