@@ -13,14 +13,15 @@ class UpdateWalletRequest extends FormRequest
 
     public function rules(): array
     {
-        $walletId = $this->route('wallet');
+        $wallet = $this->route('wallet');
+        $walletId = $wallet instanceof \Modules\Wallets\Models\Wallet ? $wallet->id : $wallet;
 
         return [
             'customer_id' => ['sometimes', 'integer', 'exists:customers,id'],
             'wallet_number' => ['sometimes', 'string', 'unique:wallets,wallet_number,' . $walletId],
             'balance' => ['sometimes', 'numeric', 'min:0'],
             'currency' => ['sometimes', 'string', 'max:3'],
-            'status' => ['sometimes', 'in:active,inactive'],
+            'status' => ['sometimes', 'in:active,inactive,suspended'],
             'description' => ['sometimes', 'string', 'max:255'],
         ];
     }

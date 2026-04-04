@@ -16,19 +16,7 @@ class WalletController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $wallet = $this->getCustomerWallet($request);
-
-        if (!$wallet) {
-            return response()->json([
-                'data' => [
-                    'balance' => 0,
-                    'available_balance' => 0,
-                    'currency' => 'USD',
-                    'status' => 'inactive',
-                    'is_active' => false,
-                ],
-            ]);
-        }
+        $wallet = $this->getOrCreateWallet($request);
 
         return response()->json([
             'data' => new WalletResource($wallet),
@@ -40,13 +28,13 @@ class WalletController extends Controller
      */
     public function balance(Request $request): JsonResponse
     {
-        $wallet = $this->getCustomerWallet($request);
+        $wallet = $this->getOrCreateWallet($request);
 
         return response()->json([
             'data' => [
-                'balance' => $wallet ? (float) $wallet->balance : 0,
-                'available_balance' => $wallet ? (float) $wallet->available_balance : 0,
-                'currency' => $wallet?->currency ?? 'USD',
+                'balance' => (float) $wallet->balance,
+                'available_balance' => (float) $wallet->available_balance,
+                'currency' => $wallet->currency,
             ],
         ]);
     }
