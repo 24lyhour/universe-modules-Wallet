@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { SearchableSelect, type SearchableSelectOption } from '@/components/shared/SearchableSelect';
 import type { InertiaForm } from '@inertiajs/vue3';
 import type { WalletFormData, CustomerOption } from '../../Types';
+import TiptapEditor from '@/components/TiptapEditor.vue';
 
 interface Props {
     mode?: 'create' | 'edit';
@@ -97,7 +98,7 @@ const customerOptions = computed<SearchableSelectOption[]>(() => {
 
                 <div class="space-y-2">
                     <Label for="description">Description</Label>
-                    <Input id="description" v-model="model.description" placeholder="Optional description" />
+                    <TiptapEditor id="description" v-model="model.description" placeholder="Optional description" />
                     <p v-if="model.errors.description" class="text-sm text-destructive">
                         {{ model.errors.description }}
                     </p>
