@@ -243,10 +243,15 @@ class Transaction extends Model
 
         $wallet = $this->wallet;
 
-        // Create reversal transaction
+        // Create reversal transaction.
+        // - Credit reversal (e.g. reversing a DEPOSIT) → WITHDRAWAL
+        // - Debit reversal of a PAYMENT → REFUND (semantically correct)
+        // - Debit reversal of other types → DEPOSIT
         $reversalType = $this->is_credit
             ? TransactionType::WITHDRAWAL
-            : TransactionType::DEPOSIT;
+            : ($this->type === TransactionType::PAYMENT
+                ? TransactionType::REFUND
+                : TransactionType::DEPOSIT);
 
         $balanceBefore = (float) $wallet->balance;
         $newBalance = $this->is_credit
