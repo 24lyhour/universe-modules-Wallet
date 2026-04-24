@@ -210,8 +210,8 @@ export const TRANSACTION_TYPE_CONFIG: Record<TransactionType, TransactionTypeCon
     },
     [TransactionTypeEnum.PAYMENT]: {
         label: 'Payment',
-        variant: 'destructive',
-        color: 'text-red-600',
+        variant: 'default',
+        color: 'text-green-600',
         icon: 'CreditCard',
     },
     [TransactionTypeEnum.REFUND]: {

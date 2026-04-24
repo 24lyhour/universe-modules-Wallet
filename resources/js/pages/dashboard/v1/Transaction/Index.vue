@@ -174,6 +174,23 @@ const getStatusIcon = (status: string) => {
     }
 };
 
+// Color from BUSINESS perspective — payment received = green, refund issued = red.
+const getTypeColor = (type: string, isCredit: boolean): string => {
+    switch (type) {
+        case 'payment':
+        case 'deposit':
+        case 'transfer_in':
+            return 'text-green-600';
+        case 'refund':
+        case 'withdrawal':
+        case 'transfer_out':
+        case 'fee':
+            return 'text-red-600';
+        default:
+            return isCredit ? 'text-green-600' : 'text-red-600';
+    }
+};
+
 // Get type icon
 const getTypeIcon = (type: string) => {
     switch (type) {
@@ -364,10 +381,7 @@ const tableData = computed(() => {
                     <div class="flex items-center gap-2">
                         <component
                             :is="getTypeIcon(item.type)"
-                            :class="[
-                                'h-4 w-4',
-                                item.is_credit ? 'text-green-600' : 'text-red-600',
-                            ]"
+                            :class="['h-4 w-4', getTypeColor(item.type, item.is_credit)]"
                         />
                         <span>{{ item.type_label }}</span>
                     </div>
@@ -376,12 +390,7 @@ const tableData = computed(() => {
                 <!-- Amount cell with color -->
                 <template #cell-amount="{ item }">
                     <div class="text-right">
-                        <span
-                            :class="[
-                                'font-medium',
-                                item.is_credit ? 'text-green-600' : 'text-red-600',
-                            ]"
-                        >
+                        <span :class="['font-medium', getTypeColor(item.type, item.is_credit)]">
                             {{ item.is_credit ? '+' : '-' }}{{ formatCurrency(item.amount, item.currency) }}
                         </span>
                     </div>
