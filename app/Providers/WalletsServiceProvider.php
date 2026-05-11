@@ -2,9 +2,10 @@
 
 namespace Modules\Wallets\Providers;
 
-use App\Services\MenuService;
+use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Modules\Wallets\Http\Middleware\DashboardMiddlewareHandle;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -28,48 +29,17 @@ class WalletsServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
-        $this->registerMenuItems();
+        $this->registerDashboardMiddleware();
     }
 
     /**
-     * Register menu items for the Wallets module.
+     * Sidebar entries live in DashboardMiddlewareHandle.
      */
-    protected function registerMenuItems(): void
+    protected function registerDashboardMiddleware(): void
     {
-        $this->app->booted(function () {
-            MenuService::addMenuItem(
-                menu: 'primary',
-                id: 'wallets',
-                title: __('Wallets'),
-                url: route('wallets.index'),
-                icon: 'Wallet',
-                order: 50,
-                permissions: 'wallets.view_any',
-                route: 'wallets.*'
-            );
-
-            MenuService::addSubmenuItem(
-                'primary',
-                'wallets',
-                __('Wallets'),
-                route('wallets.index'),
-                10,
-                'wallets.view_any',
-                'wallets.index',
-                'Wallet'
-            );
-
-            MenuService::addSubmenuItem(
-                'primary',
-                'wallets',
-                __('Transactions'),
-                route('transactions.index'),
-                20,
-                'transactions.view_any',
-                'transactions.*',
-                'ArrowLeftRight'
-            );
-        });
+        /** @var \Illuminate\Foundation\Http\Kernel $kernel */
+        $kernel = $this->app->make(HttpKernel::class);
+        $kernel->prependMiddlewareToGroup('web', DashboardMiddlewareHandle::class);
     }
 
     /**
