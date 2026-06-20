@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Wallets\Http\Controllers\Dashboard\V1\TopUpController;
+use Modules\Wallets\Http\Controllers\Dashboard\V1\TransactionController;
 use Modules\Wallets\Http\Controllers\Dashboard\V1\WalletController;
 use Modules\Wallets\Http\Controllers\Dashboard\V1\WalletSettingsController;
-use Modules\Wallets\Http\Controllers\Dashboard\V1\TransactionController;
 
 Route::middleware(['auth', 'verified', 'auto.permission'])
     ->prefix('dashboard')
@@ -26,6 +27,19 @@ Route::middleware(['auth', 'verified', 'auto.permission'])
         Route::patch('wallets/{wallet}/suspend', [WalletController::class, 'suspend'])->name('wallets.suspend');
         Route::patch('wallets/{wallet}/unsuspend', [WalletController::class, 'unsuspend'])->name('wallets.unsuspend');
         Route::patch('wallets/{wallet}/status', [WalletController::class, 'changeStatus'])->name('wallets.change-status');
+
+        // Top-up routes (must be before resource to avoid /{topup} collision)
+        Route::prefix('topups')->name('topups.')->group(function () {
+            Route::get('/', [TopUpController::class, 'index'])->name('index');
+            Route::get('/create', [TopUpController::class, 'create'])->name('create');
+            Route::post('/', [TopUpController::class, 'store'])->name('store');
+            Route::get('/{topup}', [TopUpController::class, 'show'])->name('show');
+            Route::get('/{topup}/delete', [TopUpController::class, 'confirmDelete'])->name('delete');
+            Route::delete('/{topup}', [TopUpController::class, 'destroy'])->name('destroy');
+            Route::patch('/{topup}/complete', [TopUpController::class, 'complete'])->name('complete');
+            Route::patch('/{topup}/cancel', [TopUpController::class, 'cancel'])->name('cancel');
+            Route::patch('/{topup}/fail', [TopUpController::class, 'markFailed'])->name('fail');
+        });
 
         // Transaction routes
         Route::prefix('wallets/{wallet}/transactions')->name('wallets.transactions.')->group(function () {

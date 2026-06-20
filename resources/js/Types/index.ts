@@ -79,3 +79,24 @@ export {
     getTransactionTypeOptions,
     getTransactionStatusOptions,
 } from './Transaction';
+
+// ============================================================================
+// RE-EXPORTS: TOP-UP TYPES
+// ============================================================================
+
+export {
+    TopUpStatusEnum,
+    type TopUpStatus,
+    type TopUp,
+    type TopUpWalletOption,
+    type TopUpStats,
+    type TopUpFilters,
+    type TopUpFormData,
+    type TopUpIndexProps,
+    type TopUpCreateProps,
+    type TopUpShowProps,
+    type TopUpDeleteProps,
+    TOPUP_STATUS_CONFIG,
+    PAYMENT_METHOD_OPTIONS,
+    getTopUpStatusVariant,
+} from './TopUp';

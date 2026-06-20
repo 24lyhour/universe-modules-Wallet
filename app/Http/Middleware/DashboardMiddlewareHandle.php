@@ -38,6 +38,7 @@ class DashboardMiddlewareHandle
 
         MenuService::addSubmenuItem('primary', 'wallets', __('Wallets'), route('wallets.index'), 10, 'wallets.view_any', 'wallets.index', 'Wallet');
         MenuService::addSubmenuItem('primary', 'wallets', __('Transactions'), route('transactions.index'), 20, 'transactions.view_any', 'transactions.*', 'ArrowLeftRight');
+        MenuService::addSubmenuItem('primary', 'wallets', __('Top-ups'), route('topups.index'), 30, 'topups.view_any', 'topups.*', 'CreditCard');
 
         static::$registered = true;
     }

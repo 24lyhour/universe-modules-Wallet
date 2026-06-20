@@ -78,43 +78,6 @@ class WalletController extends Controller
     }
 
     /**
-     * Top up wallet (deposit).
-     */
-    public function topUp(Request $request): JsonResponse
-    {
-        $request->validate([
-            'amount' => ['required', 'numeric', 'min:1', 'max:10000'],
-            'payment_method' => ['nullable', 'string'],
-            'description' => ['nullable', 'string', 'max:255'],
-        ]);
-
-        $wallet = $this->getOrCreateWallet($request);
-
-        if (!$wallet->canTransact()) {
-            return response()->json([
-                'message' => 'Wallet is not active.',
-            ], 422);
-        }
-
-        $transaction = $wallet->deposit(
-            $request->float('amount'),
-            $request->input('description', 'Top up'),
-            [
-                'payment_method' => $request->input('payment_method', 'manual'),
-                'source' => 'app',
-            ]
-        );
-
-        return response()->json([
-            'message' => 'Top up successful.',
-            'data' => [
-                'transaction' => new TransactionResource($transaction),
-                'wallet' => new WalletResource($wallet->fresh()),
-            ],
-        ]);
-    }
-
-    /**
      * Pay from wallet (deduct balance).
      */
     public function pay(Request $request): JsonResponse
@@ -140,12 +103,12 @@ class WalletController extends Controller
         }
 
         $transaction = $wallet->pay(
-            $request->float('amount'),
-            $request->input('description', 'Payment'),
-            [
+            amount: $request->float('amount'),
+            description: $request->input('description', 'Payment'),
+            metadata: [
                 'order_id' => $request->input('order_id'),
                 'source' => 'app',
-            ]
+            ],
         );
 
         return response()->json([
@@ -193,7 +156,7 @@ class WalletController extends Controller
         return response()->json([
             'message' => 'Transfer successful.',
             'data' => [
-                'transaction' => new TransactionResource($transactions['outgoing']),
+                'transaction' => new TransactionResource($transactions['out']),
                 'wallet' => new WalletResource($wallet->fresh()),
             ],
         ]);
